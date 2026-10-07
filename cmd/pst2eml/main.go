@@ -21,6 +21,7 @@ type App struct {
 	zipPath    string
 	zipTouched bool
 	running    bool
+	asking     bool
 	closed     bool
 	status     string
 	log        string
@@ -55,6 +56,7 @@ type snap struct {
 	pstPath string
 	zipPath string
 	running bool
+	asking  bool
 	status  string
 	log     string
 	written int
@@ -68,6 +70,7 @@ func (a *App) snapshot() snap {
 		pstPath: a.pstPath,
 		zipPath: a.zipPath,
 		running: a.running,
+		asking:  a.asking,
 		status:  a.status,
 		log:     a.log,
 		written: a.written,
@@ -109,7 +112,7 @@ func mainView(w *gui.Window) gui.View {
 			ID:       "convert",
 			Label:    "변환",
 			Variant:  gui.ButtonPrimary,
-			Disabled: s.running || s.pstPath == "" || s.zipPath == "",
+			Disabled: s.running || s.asking || s.pstPath == "" || s.zipPath == "",
 			OnClick: func(ctx gui.EventCtx) {
 				startConvert(ctx.Window)
 			},
@@ -255,7 +258,7 @@ func progressView(s snap) gui.View {
 func startConvert(w *gui.Window) {
 	app := gui.State[App](w)
 	s := app.snapshot()
-	if s.running {
+	if s.running || s.asking {
 		return
 	}
 	if st, err := os.Stat(s.pstPath); err != nil || st.IsDir() {
@@ -307,21 +310,30 @@ func runConvert(w *gui.Window) {
 				}
 			})
 		})
-		app.update(w, func() {
-			app.running = false
-			app.written = res.Written
-			app.failed = res.Failed
-			for _, problem := range res.Problems {
-				app.appendLogLocked("", problem)
-			}
-			if err != nil {
-				app.status = "실패: " + err.Error()
-				app.appendLogLocked("", err.Error())
-				return
-			}
-			app.status = fmt.Sprintf("완료. EML %d통, 건너뜀 %d, 실패 %d. %s", res.Written, res.Skipped, res.Failed, zipPath)
-		})
+		finishConvert(app, w, res, err, zipPath)
 	}()
+}
+
+func finishConvert(app *App, w *gui.Window, res convert.Result, err error, zipPath string) {
+	app.update(w, func() {
+		app.running = false
+		app.written = res.Written
+		app.failed = res.Failed
+		for _, problem := range res.Problems {
+			app.appendLogLocked("", problem)
+		}
+		if err != nil {
+			app.status = "실패: " + err.Error()
+			app.appendLogLocked("", err.Error())
+			return
+		}
+		app.status = fmt.Sprintf("완료. EML %d통, 건너뜀 %d, 실패 %d. %s", res.Written, res.Skipped, res.Failed, zipPath)
+		if strings.TrimSpace(zipPath) == "" {
+			return
+		}
+		app.asking = true
+		offerReveal(w, zipPath)
+	})
 }
 
 func (a *App) appendLogLocked(folder, line string) {
