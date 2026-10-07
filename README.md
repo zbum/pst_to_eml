@@ -2,9 +2,9 @@
 
 Outlook PST 파일을 메시지별 EML로 풀어 하나의 ZIP으로 저장하는 변환 유틸리티입니다.
 
-창은 [go-gui](https://github.com/go-gui-org/go-gui)로 그립니다. 브라우저나 HTML은 쓰지 않습니다. PST 읽기는 [go-pst](https://github.com/mooijtech/go-pst) (Apache-2.0)를 사용합니다.
+![PST 파일과 ZIP 경로를 고르고 변환하면 메일마다 EML이 쌓이는 창](docs/screenshot.png)
 
-메일(`IPM.Note`와 라이브러리가 메일로 분류한 항목)만 EML로 내보냅니다. 연락처, 일정, 작업은 건너뜁니다. 첨부 파일은 해당 EML의 MIME 파트로 넣습니다. PST에 원본 인터넷 헤더가 없으면 제목과 표시 이름으로 헤더를 만듭니다. 표시 문자열에 붙은 NUL과 그 밖의 제어 문자는 헤더에서 뺍니다.
+메일만 EML로 내보냅니다. 연락처, 일정, 작업은 건너뜁니다. 첨부 파일은 해당 EML의 MIME 파트로 넣습니다. PST에 원본 인터넷 헤더가 없으면 제목과 표시 이름으로 헤더를 만듭니다. 표시 문자열에 붙은 NUL과 그 밖의 제어 문자는 헤더에서 뺍니다.
 
 본문은 저장된 형식 그대로 보이게 만듭니다. HTML이 있으면 `text/html`이고, 평문과 함께 있으면 `multipart/alternative`입니다. HTML이 `cid:`로 가리키는 그림은 `multipart/related`로 붙이고, 나머지 첨부는 `multipart/mixed`입니다. RTF만 있는 메일은 HTML로 풀리면 HTML로, 아니면 보이는 글만 평문으로 넣습니다.
 
@@ -32,6 +32,12 @@ make build-all
 - `dist/pst2eml-darwin-arm64`
 
 ## Changelog
+
+### 2026-10-07 — feature/readme-screenshot
+
+- 소개에서 사용한 라이브러리 이름을 뺐습니다.
+- 변환 창 그림을 넣어, PST를 고르고 ZIP으로 바꾸면 메일마다 EML이 쌓이는 모습을 보이게 했습니다.
+- 그림의 경로와 로그는 예시입니다. 동작과 의존성은 그대로입니다.
 
 ### 2026-10-07 — feature/reveal-conversion-result
 
