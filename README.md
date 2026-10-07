@@ -14,7 +14,7 @@ Outlook PST 파일을 메시지별 EML로 풀어 하나의 ZIP으로 저장하�
 go run ./cmd/pst2eml
 ```
 
-PST와 ZIP 경로를 고른 뒤 변환을 누릅니다. ZIP 안 경로는 PST 폴더를 따르고, 파일 이름은 `000001-제목.eml` 형태입니다.
+PST와 ZIP 경로를 고른 뒤 변환을 누릅니다. ZIP 안 경로는 PST 폴더를 따르고, 파일 이름은 `000001-제목.eml` 형태입니다. 변환이 끝나면 결과 ZIP을 Finder, 탐색기, 또는 파일 관리자에서 열지 묻습니다. 동의하면 macOS와 Windows는 그 ZIP을 선택한 채로 열고, Linux는 ZIP이 있는 폴더를 엽니다.
 
 ## 빌드
 
@@ -30,3 +30,12 @@ make build-all
 - `dist/pst2eml-linux-amd64`
 - `dist/pst2eml-windows-amd64.exe`
 - `dist/pst2eml-darwin-arm64`
+
+## Changelog
+
+### 2026-10-07 — feature/reveal-conversion-result
+
+- 변환이 성공하면 결과 ZIP을 Finder, 탐색기, 또는 파일 관리자에서 열지 묻습니다.
+- 동의하면 macOS와 Windows는 그 ZIP을 선택한 채로 열고, Linux는 ZIP이 있는 폴더를 엽니다.
+- 취소하거나 변환이 실패하면 열지 않습니다. 묻는 동안 변환 버튼은 비활성화됩니다.
+- 새 의존성은 없습니다.
